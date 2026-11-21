@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="tr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Umre Adım Adım (Hanefi)</title>
+<style>
+:root{--bg:#f6f3ec;--card:#fff;--ink:#1d2a24;--mut:#5d6b64;--acc:#1f7a5a;--line:#d9d4c7;--gold:#b8892b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121a16;--card:#1b261f;--ink:#e8efe9;--mut:#9fb0a6;--acc:#4fc79a;--line:#2f3f35;--gold:#e0b24f}}
+:root[data-theme="dark"]{--bg:#121a16;--card:#1b261f;--ink:#e8efe9;--mut:#9fb0a6;--acc:#4fc79a;--line:#2f3f35;--gold:#e0b24f}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:560px;margin:0 auto;padding:16px}
+h1{font-size:20px;margin:4px 0 12px}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px}
+.tabs button{flex:0 0 auto;border:1px solid var(--line);background:var(--card);color:var(--mut);border-radius:20px;padding:6px 12px;font-size:13px}
+.tabs button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:10px}
+.stage{display:flex;justify-content:center}
+svg{width:100%;max-width:340px;height:auto}
+h2{font-size:17px;margin:0 0 8px}
+ul{list-style:none;margin:0;padding:0}
+li{padding:8px 10px;border-left:3px solid var(--acc);background:var(--bg);border-radius:6px;margin-bottom:6px;font-size:14.5px;opacity:0;transform:translateY(8px);animation:in .5s forwards}
+@keyframes in{to{opacity:1;transform:none}}
+.ar{color:var(--gold);font-size:14px}
+.nav{display:flex;gap:8px;margin-top:12px}
+.nav button{flex:1;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:15px}
+.nav .p{background:var(--acc);color:#fff;border-color:var(--acc)}
+.cnt{text-align:center;font-weight:600;color:var(--acc);margin-top:4px}
+.note{font-size:12px;color:var(--mut);margin-top:12px}
+</style></head><body><main>
+<h1>🕋 Umre Adım Adım (Hanefi)</h1>
+<div class="tabs" id="tabs"></div>
+<div class="card"><div class="stage" id="stage"></div><div class="cnt" id="cnt"></div></div>
+<div class="card"><h2 id="ttl"></h2><ul id="lst"></ul></div>
+<div class="nav"><button id="bk">← Geri</button><button id="rp">↻ Tekrar</button><button class="p" id="nx">İleri →</button></div>
+<p class="note">Bu sayfa genel bir özettir. Mezhep ve uygulama ayrıntıları için hocanıza veya Diyanet hac-umre rehberine danışın.</p>
+<script>
+const S=[
+{t:"1. İhrama giriş",e:"🧴",i:["Tırnak, kasık, koltuk altı temizliği; gusül veya abdest","Erkek: dikişsiz iki beyaz örtü, başı açık. Kadın: örtülü normal kıyafet","2 rekât ihram namazı: 1. rekât Fâtiha + Kâfirûn, 2. rekât Fâtiha + İhlâs","Umreye niyet: “Allah’ım umre yapmak istiyorum, kolaylaştır ve kabul et”","Telbiye (3 kez, erkekler sesli, kadınlar alçak sesle): <span class='ar'>Lebbeyk Allâhümme lebbeyk, lebbeyke lâ şerîke leke lebbeyk. İnne’l-hamde ve’n-ni’mete leke ve’l-mülk, lâ şerîke lek.</span>"]},
+{t:"2. Tavaf (7 şavt)",e:"",i:["Abdestli olun; erkek ıztıba yapar (sağ omuz açık)","Telbiyeyi Hacerülesved’e varınca kesin","Hacerülesved hizasında niyet ve istilam (işaret + Bismillahi Allahu ekber)","Kâbe solunuzda, saat yönünün tersine dönün; Hatim’in dışından","Erkek ilk 3 şavtta remel (hızlı, kısa adım), kalan 4 şavtta normal yürür","Her şavtta ve sonda istilam; Yemânî köşede: Rabbena âtina…"]},
+{t:"3. Tavaf namazı ve zemzem",e:"🙏",i:["Ridayı iki omza alın (ıztıba biter)","Makâm-ı İbrahim arkasında veya uygun yerde 2 rekât (vacip)","Kerahet vaktindeyse vakit çıkınca kılın","Zemzemi kıbleye dönüp Bismillah ile için ve dua edin"]},
+{t:"4. Sa’y (Safa → Merve, 7 gidiş)",e:"",i:["Safa’dan başlayın, Kâbe’ye dönüp niyet, tekbir ve dua","Safa→Merve 1, Merve→Safa 2 … 7. gidiş Merve’de biter","Yeşil ışıklı bölgede erkekler hızlı yürür, kadınlar normal","Safa ve Merve’de her seferinde kısa dua"]},
+{t:"5. Tıraş ve ihramdan çıkış",e:"✂️",i:["Erkek: saçı kazıtmak (halk) daha faziletli; kısaltmada en az dörtte biri","Kadın: saçın ucundan bir parmak ucu kadar kısaltır","Tıraş Harem bölgesinde yapılır; sa’yden sonra","İhram yasakları sona erer. Umreniz tamamdır 🤲"]}
+];
+let k=0,raf=0,t0=0;
+const $=id=>document.getElementById(id),st=$("stage"),cnt=$("cnt");
+$("tabs").innerHTML=S.map((s,j)=>`<button data-j="${j}">${j+1}</button>`).join("");
+$("tabs").onclick=e=>{if(e.target.dataset.j!==undefined){k=+e.target.dataset.j;go()}};
+$("bk").onclick=()=>{k=Math.max(0,k-1);go()};
+$("nx").onclick=()=>{k=Math.min(S.length-1,k+1);go()};
+$("rp").onclick=go;
+function go(){
+ cancelAnimationFrame(raf);const s=S[k];
+ document.querySelectorAll(".tabs button").forEach((b,j)=>b.classList.toggle("on",j==k));
+ $("ttl").textContent=s.t;
+ $("lst").innerHTML=s.i.map((x,j)=>`<li style="animation-delay:${j*0.7}s">${x}</li>`).join("");
+ cnt.textContent="";
+ if(k==1)tawaf();else if(k==3)say();
+ else st.innerHTML=`<div style="font-size:84px;padding:20px;animation:in .6s forwards;opacity:0">${s.e}</div>`;
+}
+function tawaf(){
+ const cx=170,cy=170,r=105;
+ st.innerHTML=`<svg viewBox="0 0 340 340"><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--line)" stroke-width="2" stroke-dasharray="4 5"/>
+ <rect x="140" y="140" width="60" height="60" rx="4" fill="#111"/><rect x="140" y="150" width="60" height="6" fill="var(--gold)"/>
+ <line x1="${cx}" y1="${cy+r-14}" x2="${cx}" y2="${cy+r+14}" stroke="var(--acc)" stroke-width="3"/>
+ <text x="${cx}" y="${cy+r+30}" text-anchor="middle" font-size="12" fill="var(--mut)">Hacerülesved (başlangıç)</text>
+ <circle id="d" r="9" fill="var(--acc)"/><text id="m" x="170" y="28" text-anchor="middle" font-size="14" fill="var(--ink)"></text></svg>`;
+ t0=performance.now();
+ const f=n=>{const e=((n-t0)/1000)%29;let lap,fr;
+  if(e<9){lap=Math.floor(e/3);fr=(e%3)/3}else{const q=e-9;lap=3+Math.floor(q/5);fr=(q%5)/5}
+  const th=-Math.PI/2+2*Math.PI*fr,d=$("d");if(!d)return;
+  d.setAttribute("cx",cx+r*Math.cos(th));d.setAttribute("cy",cy-r*Math.sin(th));
+  $("m").textContent=lap<3?"Remel: hızlı, kısa adım":"Normal yürüyüş";
+  cnt.textContent=`Şavt ${lap+1} / 7`;raf=requestAnimationFrame(f)};
+ raf=requestAnimationFrame(f);
+}
+function say(){
+ const x0=40,x1=300,y=150;
+ st.innerHTML=`<svg viewBox="0 0 340 300"><line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="var(--line)" stroke-width="6" stroke-linecap="round"/>
+ <rect x="130" y="${y-4}" width="80" height="8" fill="var(--acc)" rx="3"/>
+ <text x="${x0}" y="${y+34}" text-anchor="middle" font-size="14" fill="var(--ink)">Safa</text>
+ <text x="${x1}" y="${y+34}" text-anchor="middle" font-size="14" fill="var(--ink)">Merve</text>
+ <text x="170" y="${y+34}" text-anchor="middle" font-size="11" fill="var(--acc)">yeşil ışık</text>
+ <circle id="d" r="10" cy="${y}" fill="var(--gold)"/></svg>`;
+ t0=performance.now();
+ const f=n=>{const e=((n-t0)/1000)%21,leg=Math.floor(e/3),fr=(e%3)/3,d=$("d");if(!d)return;
+  const x=leg%2==0?x0+(x1-x0)*fr:x1-(x1-x0)*fr;d.setAttribute("cx",x);
+  const g=x>130&&x<210;d.setAttribute("fill",g?"var(--acc)":"var(--gold)");
+  cnt.textContent=`Gidiş ${leg+1} / 7`+(g?" · erkekler hızlı yürür":"");raf=requestAnimationFrame(f)};
+ raf=requestAnimationFrame(f);
+}
+go();
+</script></main></body></html>
