@@ -23,8 +23,7 @@ svg{width:100%;max-width:340px;height:auto}
 .stage img{width:100%;max-width:340px;height:auto;display:block}
 h2{font-size:17px;margin:0 0 8px}
 ul{list-style:none;margin:0;padding:0}
-li{padding:8px 10px;border-left:3px solid var(--acc);background:var(--bg);border-radius:6px;margin-bottom:6px;font-size:14.5px;opacity:0;transform:translateY(8px);animation:in .5s forwards}
-@keyframes in{to{opacity:1;transform:none}}
+li{padding:8px 10px;border-left:3px solid var(--acc);background:var(--bg);border-radius:6px;margin-bottom:6px;font-size:14.5px}
 .ar{color:var(--gold);font-size:14px}
 .nav{display:flex;gap:8px;margin-top:12px}
 .nav button{flex:1;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:15px}
@@ -46,7 +45,7 @@ li{padding:8px 10px;border-left:3px solid var(--acc);background:var(--bg);border
 <p class="note">Bu sayfa genel bir özettir. Mezhep ve uygulama ayrıntıları için hocanıza veya Diyanet hac-umre rehberine danışın.</p>
 <script>
 const S=[
-{t:"1. İhrama giriş",e:"🧴",i:["Tırnak, kasık, koltuk altı temizliği; gusül veya abdest","Erkek: dikişsiz iki beyaz örtü, başı açık. Kadın: örtülü normal kıyafet","2 rekât ihram namazı: 1. rekât Fâtiha + Kâfirûn, 2. rekât Fâtiha + İhlâs","Umreye niyet: “Allah’ım umre yapmak istiyorum, kolaylaştır ve kabul et”","Telbiye (3 kez, erkekler sesli, kadınlar alçak sesle): <span class='ar'>Lebbeyk Allâhümme lebbeyk, lebbeyke lâ şerîke leke lebbeyk. İnne’l-hamde ve’n-ni’mete leke ve’l-mülk, lâ şerîke lek.</span>"]},
+{t:"1. İhrama giriş",e:"🌹",i:["Tırnak, kasık, koltuk altı temizliği; gusül veya abdest","Erkek: dikişsiz iki beyaz örtü, başı açık. Kadın: örtülü normal kıyafet","2 rekât ihram namazı: 1. rekât Fâtiha + Kâfirûn, 2. rekât Fâtiha + İhlâs","Umreye niyet: “Allah’ım umre yapmak istiyorum, kolaylaştır ve kabul et”","Telbiye (3 kez, erkekler sesli, kadınlar alçak sesle): <span class='ar'>Lebbeyk Allâhümme lebbeyk, lebbeyke lâ şerîke leke lebbeyk. İnne’l-hamde ve’n-ni’mete leke ve’l-mülk, lâ şerîke lek.</span>"]},
 {t:"2. Tavaf (7 şavt)",e:"",i:["Abdestli olun; erkek ıztıba yapar (sağ omuz açık)","Telbiyeyi Hacerülesved’e varınca kesin","Hacerülesved hizasında niyet ve istilam (işaret + Bismillahi Allahu ekber). <span class='ar'>Kâbe’ye dönüp niyet edin: “Allah’ım, umre tavafı yapmak istiyorum, kolaylaştır ve kabul et.” İstilam: Hacerülesved’i öpmek, elle dokunup eli öpmek veya kalabalıkta iki avucu ona doğru tutup “Bismillahi Allahu ekber” diyerek işaret etmek (istilam) yeterlidir.</span>","Köşeler: Hacerülesved → Kâbe kapısı → Rükn-i Irakî → Rükn-i Şâmî → Rükn-i Yemânî → Hacerülesved","Hatim’in yanından Rükn-i Şâmî’ye ulaştıktan sonra ilerleyin","Erkek ilk 3 şavtta remel (hızlı, kısa adım), kalan 4 şavtta normal yürür","Her şavtta ve sonda istilam; Yemânî köşede: Rabbena âtina…"]},
 {t:"3. Tavaf namazı ve zemzem",e:"🙏",i:["Ridayı iki omza alın (ıztıba biter)","Makâm-ı İbrahim arkasında veya uygun yerde 2 rekât (vacip)","Kerahet vaktindeyse vakit çıkınca kılın","Zemzemi kıbleye dönüp Bismillah ile için ve dua edin","Mümkünse Hacerülesved'i bir kez daha istilam edip Safa'ya yönelin."]},
 {t:"4. Sa’y (Safa → Merve, 7 gidiş)",e:"",i:["Safa’dan başlayın, Kâbe’ye dönüp niyet, tekbir ve dua","Safa→Merve 1, Merve→Safa 2 … 7. gidiş Merve’de biter","Yeşil ışıklı bölgede erkekler hızlı yürür, kadınlar normal","Safa ve Merve’de her seferinde kısa dua"]},
@@ -63,10 +62,10 @@ function go(){
  cancelAnimationFrame(raf);clearInterval(stepTimer);const s=S[k];
  document.querySelectorAll(".tabs button").forEach((b,j)=>b.classList.toggle("on",j==k));
  $("ttl").textContent=s.t;
- $("lst").innerHTML=s.i.map((x,j)=>`<li style="animation-delay:${j*0.7}s">${x}</li>`).join("");
+ $("lst").innerHTML=s.i.map(x=>`<li>${x}</li>`).join("");
  cnt.textContent="";
  if(k==1)tawaf();else if(k==3)say();
- else st.innerHTML=`<div style="font-size:84px;padding:20px;animation:in .6s forwards;opacity:0">${s.e}</div>`;
+ else st.innerHTML=`<div style="font-size:84px;padding:20px">${s.e}</div>`;
 }
 function tawaf(){
  const cx=170,cy=170,rx=145,ry=145;
