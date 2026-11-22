@@ -16,6 +16,7 @@ h1{font-size:20px;margin:4px 0 12px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:10px}
 .stage{display:flex;justify-content:center}
 svg{width:100%;max-width:340px;height:auto}
+.stage svg{width:100%;max-width:500px;height:auto}
 .stage img{width:100%;max-width:340px;height:auto;display:block}
 h2{font-size:17px;margin:0 0 8px}
 ul{list-style:none;margin:0;padding:0}
@@ -26,6 +27,12 @@ li{padding:8px 10px;border-left:3px solid var(--acc);background:var(--bg);border
 .nav button{flex:1;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:15px}
 .nav .p{background:var(--acc);color:#fff;border-color:var(--acc)}
 .cnt{text-align:center;font-weight:600;color:var(--acc);margin-top:4px}
+.tawaf-start{display:block;width:100%;padding:12px;border:0;border-radius:10px;background:var(--acc);color:#fff;font-size:15px;font-weight:700}
+.tawaf-start:disabled{opacity:.65}
+.tawaf-progress{margin:10px 0 0;padding:0;list-style:none}
+.tawaf-step{display:none;margin:0;padding:10px;border-left:3px solid var(--line);background:var(--bg);border-radius:6px;font-size:13px!important;line-height:1.55}
+.tawaf-step.active{display:block;border-left-color:var(--acc)}
+.tawaf-step.done{display:block;opacity:.72;border-left-color:var(--gold)}
 .note{font-size:12px;color:var(--mut);margin-top:12px}
 </style></head><body><main>
 <h1>🕋 Umre Adım Adım (Hanefi)</h1>
@@ -38,11 +45,11 @@ li{padding:8px 10px;border-left:3px solid var(--acc);background:var(--bg);border
 const S=[
 {t:"1. İhrama giriş",e:"🧴",i:["Tırnak, kasık, koltuk altı temizliği; gusül veya abdest","Erkek: dikişsiz iki beyaz örtü, başı açık. Kadın: örtülü normal kıyafet","2 rekât ihram namazı: 1. rekât Fâtiha + Kâfirûn, 2. rekât Fâtiha + İhlâs","Umreye niyet: “Allah’ım umre yapmak istiyorum, kolaylaştır ve kabul et”","Telbiye (3 kez, erkekler sesli, kadınlar alçak sesle): <span class='ar'>Lebbeyk Allâhümme lebbeyk, lebbeyke lâ şerîke leke lebbeyk. İnne’l-hamde ve’n-ni’mete leke ve’l-mülk, lâ şerîke lek.</span>"]},
 {t:"2. Tavaf (7 şavt)",e:"",i:["Abdestli olun; erkek ıztıba yapar (sağ omuz açık)","Telbiyeyi Hacerülesved’e varınca kesin","Hacerülesved hizasında niyet ve istilam (işaret + Bismillahi Allahu ekber). <span class='ar'>Kâbe’ye dönüp niyet edin: “Allah’ım, umre tavafı yapmak istiyorum, kolaylaştır ve kabul et.” İstilam: Hacerülesved’i öpmek, elle dokunup eli öpmek veya kalabalıkta iki avucu ona doğru tutup “Bismillahi Allahu ekber” diyerek işaret etmek (istilam) yeterlidir.</span>","Köşeler: Hacerülesved → Kâbe kapısı → Rükn-i Irakî → Rükn-i Şâmî → Rükn-i Yemânî → Hacerülesved","Hatim’in yanından Rükn-i Şâmî’ye ulaştıktan sonra ilerleyin","Erkek ilk 3 şavtta remel (hızlı, kısa adım), kalan 4 şavtta normal yürür","Her şavtta ve sonda istilam; Yemânî köşede: Rabbena âtina…"]},
-{t:"3. Tavaf namazı ve zemzem",e:"🙏",i:["Ridayı iki omza alın (ıztıba biter)","Makâm-ı İbrahim arkasında veya uygun yerde 2 rekât (vacip)","Kerahet vaktindeyse vakit çıkınca kılın","Zemzemi kıbleye dönüp Bismillah ile için ve dua edin"]},
+{t:"3. Tavaf namazı ve zemzem",e:"🙏",i:["Ridayı iki omza alın (ıztıba biter)","Makâm-ı İbrahim arkasında veya uygun yerde 2 rekât (vacip)","Kerahet vaktindeyse vakit çıkınca kılın","Zemzemi kıbleye dönüp Bismillah ile için ve dua edin","Mümkünse Hacerülesved'i bir kez daha istilam edip Safa'ya yönelin."]},
 {t:"4. Sa’y (Safa → Merve, 7 gidiş)",e:"",i:["Safa’dan başlayın, Kâbe’ye dönüp niyet, tekbir ve dua","Safa→Merve 1, Merve→Safa 2 … 7. gidiş Merve’de biter","Yeşil ışıklı bölgede erkekler hızlı yürür, kadınlar normal","Safa ve Merve’de her seferinde kısa dua"]},
 {t:"5. Tıraş ve ihramdan çıkış",e:"✂️",i:["Erkek: saçı kazıtmak (halk) daha faziletli; kısaltmada en az dörtte biri","Kadın: saçın ucundan bir parmak ucu kadar kısaltır","Tıraş Harem bölgesinde yapılır; sa’yden sonra","İhram yasakları sona erer. Umreniz tamamdır 🤲"]}
 ];
-let k=0,raf=0,t0=0;
+let k=0,raf=0,t0=0,stepTimer=0;
 const $=id=>document.getElementById(id),st=$("stage"),cnt=$("cnt");
 $("tabs").innerHTML=S.map((s,j)=>`<button data-j="${j}">${j+1}</button>`).join("");
 $("tabs").onclick=e=>{if(e.target.dataset.j!==undefined){k=+e.target.dataset.j;go()}};
@@ -50,7 +57,7 @@ $("bk").onclick=()=>{k=Math.max(0,k-1);go()};
 $("nx").onclick=()=>{k=Math.min(S.length-1,k+1);go()};
 $("rp").onclick=go;
 function go(){
- cancelAnimationFrame(raf);const s=S[k];
+ cancelAnimationFrame(raf);clearInterval(stepTimer);const s=S[k];
  document.querySelectorAll(".tabs button").forEach((b,j)=>b.classList.toggle("on",j==k));
  $("ttl").textContent=s.t;
  $("lst").innerHTML=s.i.map((x,j)=>`<li style="animation-delay:${j*0.7}s">${x}</li>`).join("");
@@ -59,22 +66,137 @@ function go(){
  else st.innerHTML=`<div style="font-size:84px;padding:20px;animation:in .6s forwards;opacity:0">${s.e}</div>`;
 }
 function tawaf(){
- st.innerHTML=`<img src="./kabe-koseleri-seffaf.png" alt="Kâbe köşeleri, Hacerülesved, Hatim ve tavaf yönleri diyagramı">`;
- cnt.textContent="7 şavt";
+ const cx=170,cy=170,rx=145,ry=145;
+ const lapRealSeconds=[210,210,210,300,300,300,300];
+ const totalRealSeconds=lapRealSeconds.reduce((a,b)=>a+b,0);
+ const steps=[
+  "<strong>1. Hacerülesved (başlangıç)</strong><br>Hacerülesved hizasındaki yeşil çizginin biraz gerisinde (Yemânî tarafında) durun. Kâbe'ye dönüp niyet edin: <span class='ar'>“Allah'ım, umre tavafı yapmak istiyorum, bunu bana kolaylaştır ve benden kabul et.”</span><br><br>Mümkünse Hacerülesved'i öpün; olmazsa elinizle dokunup öpün; kalabalıkta ellerinizi ona doğru tutup <span class='ar'>“Bismillâhi Allâhu ekber ve lillâhi'l-hamd”</span> deyin.",
+  "<strong>2. Kapı duvarı ve Multezem</strong><br>Bu duvar boyunca tesbih, salavat, Kur'an veya kendi duanızı okuyabilirsiniz. Multezem dua yeridir; tavaf sırasında veya sonra yer varsa dua edebilirsiniz. Zorunlu değildir.",
+  "<strong>3. Rükn-i Irakî</strong><br>Dokunma, öpme veya işaret yapmadan sadece geçin.",
+  "<strong>4. Hatim</strong><br>Hatim'in dışından dolaşın. İçinden geçerseniz o şavt geçersiz olur.",
+  "<strong>5. Rükn-i Şâmî ve Mustecâr</strong><br>Şâmî köşesine dokunma veya işaret yapmayın. Mustecâr duvarında da sabit bir dua yoktur.",
+  "<strong>6. Rükn-i Yemânî</strong><br>Mümkünse sağ elle dokunun, öpmeyin ve işaret etmeyin. Dokunamazsanız da işaret etmeyin; hiçbir eksiklik olmaz.",
+  "<strong>7. Yemânî ile Hacerülesved arası</strong><br><span class='ar'>“Rabbenâ âtinâ fid-dünyâ haseneten ve fil-âhireti haseneten ve kınâ azâben-nâr.”</span> deyin. Hacerülesved'e varınca şavt tamamlanır."
+ ];
+ st.innerHTML=`<svg viewBox="0 0 340 340" role="img" aria-label="Kâbe köşeleri ve tavaf simülasyonu">
+  <image href="./kabe-koseleri-seffaf.png" x="0" y="0" width="340" height="340"/>
+  <ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="none"
+   stroke="var(--line)" stroke-width="2" stroke-dasharray="5 7"/>
+  <circle id="d" cx="${cx+rx}" cy="${cy}" r="7" fill="#fff"
+   stroke="var(--acc)" stroke-width="3"/>
+ </svg>`;
+ const progressHtml=steps.map((step,index)=>`<li class="tawaf-step${index===0?" active":""}" data-step="${index}">${step}</li>`).join("");
+ cnt.innerHTML=`<button class="tawaf-start" id="tawafStart">Tavafa Başla</button><ul class="tawaf-progress">${progressHtml}</ul>`;
+ let lastStepKey="";
+ $("tawafStart").onclick=()=>{
+  $("tawafStart").disabled=true;
+  $("tawafStart").textContent="Tavaf Başladı";
+  let stepIndex=0;
+  document.querySelectorAll(".tawaf-step").forEach((item,index)=>{
+   item.classList.toggle("active",index===0);
+   item.classList.toggle("done",false);
+  });
+  t0=performance.now();
+  cnt.innerHTML=`<button class="tawaf-start" id="tawafStart" disabled>Tavaf Başladı</button>
+   <strong id="tawafStatus" style="display:block;margin-top:10px">Şavt 1 / 7 · kalan yaklaşık 29 dakika</strong>
+   <ul class="tawaf-progress">${progressHtml}</ul>`;
+  stepTimer=setInterval(()=>{
+   stepIndex=Math.min(steps.length-1,stepIndex+1);
+   document.querySelectorAll(".tawaf-step").forEach((item,index)=>{
+    item.classList.toggle("active",index===stepIndex);
+    item.classList.toggle("done",index<stepIndex);
+   });
+  },2000);
+  raf=requestAnimationFrame(f);
+ };
+ const f=n=>{
+  const elapsedRealSeconds=Math.min((n-t0)/1000,totalRealSeconds);
+  let lap=0,lapStart=0;
+  while(lap<7&&elapsedRealSeconds>=lapStart+lapRealSeconds[lap]){
+   lapStart+=lapRealSeconds[lap];
+   lap++;
+  }
+  lap=Math.min(lap,6);
+  const fr=elapsedRealSeconds>=totalRealSeconds?1:
+   (elapsedRealSeconds-lapStart)/lapRealSeconds[lap];
+  const angle=-2*Math.PI*fr;
+  const d=$("d");
+  if(d){
+   d.setAttribute("cx",cx+rx*Math.cos(angle));
+   d.setAttribute("cy",cy+ry*Math.sin(angle));
+  }
+  const completedRealSeconds=elapsedRealSeconds>=totalRealSeconds?totalRealSeconds:
+   lapRealSeconds.slice(0,lap).reduce((a,b)=>a+b,0)+lapRealSeconds[lap]*fr;
+  const remainingMinutes=elapsedRealSeconds>=totalRealSeconds?0:
+   Math.ceil((totalRealSeconds-completedRealSeconds)/60);
+  const status=$("tawafStatus");
+  if(status)status.textContent=`Şavt ${lap+1} / 7 · kalan yaklaşık ${remainingMinutes} dakika`;
+  if(elapsedRealSeconds<totalRealSeconds)raf=requestAnimationFrame(f);
+  else{
+   clearInterval(stepTimer);
+   const button=cnt.querySelector(".tawaf-start");
+   if(button){button.disabled=true;button.textContent="Tavaf Tamamlandı";}
+   if(status)status.textContent="7 / 7 şavt tamamlandı · 0 dakika kaldı";
+  }
+ };
 }
 function say(){
  const x0=40,x1=300,y=150;
+ const legDurationSeconds=240;
+ const totalSeconds=legDurationSeconds*7;
+ const steps=[
+  "<strong>1. Safa'ya çıkış ve niyet</strong><br>Safa'ya yaklaşırken Bakara 158. ayeti okuyun (yalnızca ilk seferde): <span class='ar'>“İnnes-safâ vel-mervete min şeâirillâh.”</span> Ardından <span class='ar'>“Ebdeü bimâ bedeallâhü bih”</span> deyin.<br><br>Safa'nın bir miktar yükseltisine çıkın ve Kâbe'yi görecek şekilde kıbleye dönün. Niyet edin: <span class='ar'>“Allah'ım, umre sa'yını yapmak istiyorum, bunu bana kolaylaştır ve benden kabul et.”</span>",
+  "<strong>2. Safa'da dua</strong><br>Üç kez tekbir edin: <span class='ar'>“Allâhu ekber, Allâhu ekber, Allâhu ekber.”</span> Ardından tehlil okuyun: <span class='ar'>“Lâ ilâhe illallâhü vahdehû lâ şerîke leh, lehü'l-mülkü ve lehü'l-hamdü ve hüve alâ külli şey'in kadîr.”</span><br><br>Devam edin: <span class='ar'>“Lâ ilâhe illallâhü vahdeh, enceze va'deh, ve nasara abdeh, ve hezeme'l-ahzâbe vahdeh.”</span> Ardından salavat getirip kendi dileğinizle dua edin.",
+  "<strong>3. Safa → Merve (1. gidiş)</strong><br>Merve'ye doğru normal yürüyün, tesbih, zikir veya dua edin. Yeşil ışıklı bölgeye gelince erkekler hızlı yürür; kadınlar normal yürür. Yeşil bölgede: <span class='ar'>“Rabbiğfir verham inneke entel-a'azzül-ekrem.”</span>",
+  "<strong>4. Merve'de</strong><br>Merve'nin yükseltisine çıkın ve kıbleye dönün. Safa'daki gibi tekbir, tehlil ve dua yapın. Bakara 158'i tekrar okumayın. Bu varış 1. gidişi tamamlar.",
+  "<strong>5. Merve → Safa ve sonrası</strong><br>Aynı şekilde geri dönün; yeşil bölgede erkekler hızlı yürür. Merve→Safa 2. gidiştir. Sonraki sıralama: Safa→Merve 3, Merve→Safa 4, Safa→Merve 5, Merve→Safa 6, Safa→Merve 7. 7. gidiş Merve'de biter. Her varışta tekbir, tehlil ve dua yapın. 7. gidişte Merve'de dua ettikten sonra sa'y bitmiştir."
+ ];
  st.innerHTML=`<svg viewBox="0 0 340 300"><line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="var(--line)" stroke-width="6" stroke-linecap="round"/>
  <rect x="130" y="${y-4}" width="80" height="8" fill="var(--acc)" rx="3"/>
  <text x="${x0}" y="${y+34}" text-anchor="middle" font-size="14" fill="var(--ink)">Safa</text>
  <text x="${x1}" y="${y+34}" text-anchor="middle" font-size="14" fill="var(--ink)">Merve</text>
  <text x="170" y="${y+34}" text-anchor="middle" font-size="11" fill="var(--acc)">yeşil ışık</text>
  <circle id="d" r="10" cy="${y}" fill="var(--gold)"/></svg>`;
- t0=performance.now();
- const f=n=>{const e=((n-t0)/1000)%21,leg=Math.floor(e/3),fr=(e%3)/3,d=$("d");if(!d)return;
-  const x=leg%2==0?x0+(x1-x0)*fr:x1-(x1-x0)*fr;d.setAttribute("cx",x);
+ const progressHtml=steps.map((step,index)=>`<li class="tawaf-step${index===0?" active":""}" data-step="${index}">${step}</li>`).join("");
+ cnt.innerHTML=`<button class="tawaf-start" id="sayStart">Sa'yı Başlat</button><ul class="tawaf-progress">${progressHtml}</ul>`;
+ $("sayStart").onclick=()=>{
+  $("sayStart").disabled=true;
+  $("sayStart").textContent="Sa'y Başladı";
+  t0=performance.now();
+  let stepIndex=0;
+  cnt.innerHTML=`<button class="tawaf-start" id="sayStart" disabled>Sa'y Başladı</button>
+   <strong id="sayStatus" style="display:block;margin-top:10px">Gidiş 1 / 7 · kalan yaklaşık 28 dakika</strong>
+   <ul class="tawaf-progress">${progressHtml}</ul>`;
+  stepTimer=setInterval(()=>{
+   stepIndex=Math.min(steps.length-1,stepIndex+1);
+   document.querySelectorAll(".tawaf-step").forEach((item,index)=>{
+    item.classList.toggle("active",index===stepIndex);
+    item.classList.toggle("done",index<stepIndex);
+   });
+  },2000);
+  raf=requestAnimationFrame(f);
+ };
+ const f=n=>{
+  const elapsedSeconds=Math.min((n-t0)/1000,totalSeconds);
+  const leg=Math.min(6,Math.floor(elapsedSeconds/legDurationSeconds));
+  const fr=elapsedSeconds>=totalSeconds?1:(elapsedSeconds-leg*legDurationSeconds)/legDurationSeconds;
+  const d=$("d");if(!d)return;
+  const x=leg%2===0?x0+(x1-x0)*fr:x1-(x1-x0)*fr;
+  d.setAttribute("cx",x);
   const g=x>130&&x<210;d.setAttribute("fill",g?"var(--acc)":"var(--gold)");
-  cnt.textContent=`Gidiş ${leg+1} / 7`+(g?" · erkekler hızlı yürür":"");raf=requestAnimationFrame(f)};
+  const remainingMinutes=elapsedSeconds>=totalSeconds?0:
+   Math.ceil((totalSeconds-elapsedSeconds)/60);
+  const status=$("sayStatus");
+  if(status)status.textContent=elapsedSeconds>=totalSeconds?
+   "7 / 7 gidiş tamamlandı · 0 dakika kaldı":
+   `Gidiş ${leg+1} / 7 · kalan yaklaşık ${remainingMinutes} dakika`+(g?" · erkekler hızlı yürür":"");
+  if(elapsedSeconds<totalSeconds)raf=requestAnimationFrame(f);
+  else{
+   clearInterval(stepTimer);
+   const button=cnt.querySelector(".tawaf-start");
+   if(button){button.disabled=true;button.textContent="Sa'y Tamamlandı";}
+  }
+ };
  raf=requestAnimationFrame(f);
 }
 go();
