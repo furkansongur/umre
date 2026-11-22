@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="tr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f7a5a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="./manifest.webmanifest">
 <title>Umre Adım Adım (Hanefi)</title>
 <style>
 :root{--bg:#f6f3ec;--card:#fff;--ink:#1d2a24;--mut:#5d6b64;--acc:#1f7a5a;--line:#d9d4c7;--gold:#b8892b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -200,4 +203,7 @@ function say(){
  raf=requestAnimationFrame(f);
 }
 go();
+if("serviceWorker" in navigator){
+ navigator.serviceWorker.register("./sw.js").catch(()=>{});
+}
 </script></main></body></html>

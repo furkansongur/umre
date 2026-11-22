@@ -1,0 +1,10 @@
+{
+  "name": "Umre Adım Adım",
+  "short_name": "Umre",
+  "lang": "tr",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f6f3ec",
+  "theme_color": "#1f7a5a",
+  "icons": []
+}
